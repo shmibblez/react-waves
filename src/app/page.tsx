@@ -1,4 +1,6 @@
-import { ReactNode, ReactElement, useState } from "react";
+"use client"
+
+import { ReactNode, ReactElement, useState, useRef } from "react";
 import "tailwindcss"
 import StartRecordingSVG from "../icons/start-recording.svg"
 import StopRecordingSVG from "../icons/stop-recording.svg"
@@ -66,8 +68,10 @@ function FindChordsTab() {
 }
 
 function FrequencyDisplay({ recording }: { recording: boolean }) {
+  const canvas = useRef(null)
+
   return (
-    <canvas className="rounded border-zinc-500 border-2">
+    <canvas ref={canvas} className="rounded border-zinc-500 border-2">
 
     </canvas>
   )
