@@ -3,7 +3,7 @@
 import { ReactNode, ReactElement, useState, useRef, useEffect } from "react";
 import StartRecordingSVG from "../icons/startRecordingSVG.js"
 import StopRecordingSVG from "../icons/stopRecordingSVG.js"
-import AudioHelper from "../helpers/audioHandler.jsx"
+import AudioHelper from "../helpers/audioHelper.jsx"
 
 export default function Home() {
   const [selectedTab, setSelectedTab] = useState("find chords")
