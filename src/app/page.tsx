@@ -1,40 +1,63 @@
 "use client"
 
-import { ReactNode, ReactElement, useState, useRef } from "react";
-import "tailwindcss"
-import StartRecordingSVG from "../icons/start-recording.svg"
-import StopRecordingSVG from "../icons/stop-recording.svg"
-
+import { ReactNode, ReactElement, useState, useRef, useEffect } from "react";
+import StartRecordingSVG from "../icons/startRecordingSVG.js"
+import StopRecordingSVG from "../icons/stopRecordingSVG.js"
+import AudioHelper from "../helpers/audioHandler.jsx"
 
 export default function Home() {
   const [selectedTab, setSelectedTab] = useState("find chords")
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <table className="table-auto" style={{ width: "100%", height: "100%" }}>
-        <tbody>
-          <tr>
-            {/* tabs */}
-            <td className="m-4" style={{ borderRight: "1px solid AliceBlue" }}>
-              <menu className="bg-zinc-950">
-                <li><Tab name="find chords" selected={selectedTab === "find chords"} setSelected={setSelectedTab} /></li>
-                <li><Tab name="tune" selected={selectedTab === "tune"} setSelected={setSelectedTab} /></li>
-              </menu>
-            </td>
-            {/* show selected tab */}
-            <td className="m-4">
-              <SelectedTab selected={selectedTab} />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </main>
+    <main
+      className="bg-zinc-950"
+      style={{
+        width: "100vw",
+        height: "100vh",
+        display: "grid",
+        gridTemplateColumns: "1fr 4fr",
+        gridTemplateRows: "1fr",
+        gridTemplateAreas: "sidebar tabs",
+        justifyItems: "stretch",
+      }}>
+      {/* tabs */}
+      <menu
+        className="bg-zinc-950 border-r-2 border-r-zinc-500"
+        style={{
+          gridRow: "1 / 2",
+          gridColumn: "1",
+        }}>
+        <li>
+          <Tab
+            name="find chords"
+            selected={selectedTab === "find chords"}
+            setSelected={setSelectedTab} />
+        </li>
+        <li>
+          <Tab
+            name="tune"
+            selected={selectedTab === "tune"}
+            setSelected={setSelectedTab} />
+        </li>
+      </menu>
+      {/* show selected tab */}
+      <div
+        className="m-4"
+        style={{
+          gridRow: "1 / 2",
+          gridColumn: "2"
+        }}>
+        <SelectedTab selected={selectedTab} />
+      </div>
+    </main >
   );
 }
 
 function Tab({ name, selected, setSelected }: { name: string, selected: boolean, setSelected: (s: string) => void }) {
   return (
-    <div className={"rounded-md border-zinc-500 border-1 p-4" + selected ? "bg-zinc-800" : "bg-zinc-900"} onClick={() => setSelected(name)}>
-      <h1 className="text-xl">{name}</h1>
+    <div
+      className={"p-4 border-b-zinc-500 border-b-2 " + (selected ? "bg-zinc-800" : "bg-zinc-950")}
+      onClick={() => setSelected(name)}>
+      <h1 className="text-l">{name}</h1>
     </div>
   )
 }
@@ -59,41 +82,95 @@ function FindChordsTab() {
 
   const chord: [] = [] // series of notes
   return (
-    <ul className="table-auto" style={{ width: "100%", height: "40%" }}>
-      <li><FrequencyDisplay recording={recording} /></li>
-      <li><RecordButton recording={recording} setRecording={setRecording} /></li>
-      <li><ChordShapes chord={chord} /></li>
-    </ul>
+    <div
+      className="size-full"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "stretch",
+      }}>
+      <FrequencyDisplay recording={recording} />
+      <RecordButton recording={recording} setRecording={setRecording} />
+      <ChordShapes chord={chord} />
+    </div>
   )
 }
 
 function FrequencyDisplay({ recording }: { recording: boolean }) {
   const canvas = useRef(null)
+  const canvasCtx = useRef(null)
+  const [audioStatus, setAudioStatus] = useState("loading")
+
+
+  useEffect(() => {
+    // init audio here and check if available
+
+    // check if audio supported
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      // audio not supported
+      setAudioStatus("not supported")
+      return;
+    }
+
+    // audio supported
+    const audio = navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+
+  }, [])
+
+  var frequencies;
+  if (audioStatus === "loading") {
+    frequencies = <text>loading...</text>
+  } else if (audioStatus === "not supported") {
+    frequencies = <text>microphone not supported</text>
+  } else if (audioStatus === "available") {
+    frequencies = (
+      // draw frequencies here
+      <canvas ref={canvas}>
+        {/* TODO */}
+      </canvas>
+    )
+  }
 
   return (
-    <canvas ref={canvas} className="rounded border-zinc-500 border-2">
-
-    </canvas>
+    <div
+      style={{ flexGrow: "2" }}
+      className="p-4 bg-zinc-800 rounded-xl border-2 border-zinc-500">
+      {frequencies}
+    </div>
   )
 }
 
+
 function RecordButton({ recording, setRecording }: { recording: boolean, setRecording: (r: boolean) => void }) {
   return (
-    <button className={"rounded" + recording ? "bg-red-800" : "bg-green-500"}
+    <div
+      className={"mt-4 p-4 text-center rounded-xl " + (recording ? "bg-green-800" : "bg-red-900")}
       onClick={() => setRecording(!recording)}>
-      <table>
-        <tr>
-          <td><div>{recording ? <StopRecordingSVG /> : <StartRecordingSVG />}</div></td>
-          <td><text className="text-base">{recording ? "recording" : "record"}</text></td>
-        </tr>
-      </table>
-    </button>
+      <div
+        style={{
+          width: "4vh",
+          height: "4vh",
+          float: "left",
+          display: "inline-block"
+        }}
+      >
+        {recording ? <StopRecordingSVG /> : <StartRecordingSVG />}
+      </div>
+      <text
+        style={{ display: "inline-block", float: "left" }}
+        className="text-base pl-4 my-auto"
+      >{recording ? "recording" : "record"}
+      </text>
+    </div>
   )
 }
 
 function ChordShapes({ chord }: { chord: [] }) {
   return (
-    <div>{chordShapeGenerator(chord)}</div>
+    <div
+      style={{ flexGrow: "2" }}>
+      {chordShapeGenerator(chord)}
+    </div>
   )
 }
 
