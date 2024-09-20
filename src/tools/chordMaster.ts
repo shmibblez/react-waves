@@ -838,37 +838,54 @@ class Maps {
     "0 4 8": { short: "+", long: "aug", fullName: "Augmented Triad" },
     "0 3 6": { short: "°", long: "dim", fullName: "Diminished Triad" },
 
-    // Seventh Chords
-    "0 4 7 10": { short: "⁷", long: "⁷", fullName: "Dominant Seventh" },
+    /**
+     * <Seventh Chords>
+     * according to: https://en.wikipedia.org/wiki/Seventh_chord#Classification
+
+     */
+    // Tertian
     "0 4 7 11": { short: "M⁷", long: "maj⁷", fullName: "Major Seventh" },
-    "0 3 7 11": {
-      short: "mᴹ⁷",
-      long: "minᵐᵃʲ⁷",
-      fullName: "Minor-Major Seventh",
-    },
     "0 3 7 10": { short: "m⁷", long: "min⁷", fullName: "Minor Seventh" },
-    "0 4 8 11": {
-      short: "+ᴹ⁷",
-      long: "augᵐᵃʲ⁷",
-      fullName: "Augmented-Major Seventh",
-    },
-    "0 4 8 10": { short: "+⁷", long: "aug⁷", fullName: "Augmented Seventh" },
+    "0 4 7 10": { short: "⁷", long: "⁷", fullName: "Dominant Seventh" },
     "0 3 6 10": {
       short: "ø⁷",
       long: "min⁷ᵈⁱᵐ⁵",
       fullName: "Half-Diminished Seventh",
     },
     "0 3 6 9": { short: "°⁷", long: "dim⁷", fullName: "Diminished Seventh" },
+    "0 3 7 11": {
+      short: "mᴹ⁷",
+      long: "minᵐᵃʲ⁷",
+      fullName: "Minor-Major Seventh",
+    },
+    "0 4 8 11": {
+      short: "+ᴹ⁷",
+      long: "augᵐᵃʲ⁷",
+      fullName: "Augmented-Major Seventh",
+    },
+    // Non-Tertian
+    "0 4 8 10": { short: "+⁷", long: "aug⁷", fullName: "Augmented Seventh" },
+    "0 3 6 11": { short: "mᴹ⁷ᵇ⁵", long: "minᴹ⁷ᶠˡᵃᵗ⁵", fullName: "" },
     "0 4 6 10": {
       short: "⁷ᵈⁱᵐ⁵",
       long: "⁷ᵈⁱᵐ⁵",
       fullName: "Dominant Seventh Flat Five",
     },
+    "0 4 6 11": {
+      short: "ᴹ⁷ᵇ⁵",
+      long: "ᴹ⁷ᶠˡᵃᵗ⁵",
+      fullName: "Major Seventh Flat Five",
+    },
+    /**
+     * </Seventh Chords>
+     */
 
     // Extended Chords, similar to Seventh Chords but add in future
 
-    // Ninth Chords
-    // I am not music theory expert, I may be messing up a little
+    /**
+     * <Ninth Chords>
+     * according to:https://en.wikipedia.org/wiki/Chord_notation#Ninth_chords
+     */
     // "0 4 7 11 2"
     "0 2 4 7 11": { short: "M⁹", long: "maj⁹", fullName: "Major Ninth" },
     "0 4 7 11 14": { short: "M⁹", long: "maj⁹", fullName: "Major Ninth" },
@@ -958,8 +975,14 @@ class Maps {
       long: "dimᶠˡᵃᵗ⁹",
       fullName: "Diminished Minor Ninth",
     },
+    /**
+     * <Ninth Chords>
+     */
 
-    // Eleventh Chords
+    /**
+     * <Eleventh Chords>
+     * according to: https://en.wikipedia.org/wiki/Chord_notation#Eleventh_chords
+     */
     // "0 4 7 10 2 5"
     "0 2 4 5 7 10": { short: "¹¹", long: "¹¹", fullName: "Eleventh" },
     "0 2 4 7 10 17": { short: "¹¹", long: "¹¹", fullName: "Eleventh" },
@@ -1104,9 +1127,16 @@ class Maps {
       long: "dim¹¹",
       fullName: "Diminished Eleventh",
     },
+    /**
+     * </Eleventh Chords>
+     */
 
-    // Thirteenth Chords
-    // "0 4 7 11 2 5 9"
+    /**
+     * Thirteenth Chords
+     * according to: https://en.wikipedia.org/wiki/Chord_notation#Thirteenth_chords
+     * four note voicing: root, third, seventh, thirteenth (https://en.wikipedia.org/wiki/Thirteenth#Dominant_thirteenth)
+     */
+    /// <0 4 7 11 2 5 9>
     "0 2 4 5 7 9 11": {
       short: "M¹³",
       long: "maj¹³",
@@ -1132,13 +1162,132 @@ class Maps {
       long: "maj¹³",
       fullName: "Major Thirteenth",
     },
-    // "0 4 7 10 2 5 9"
+    // root, third, seventh, thirteenth combos
+    // 0 4 (7) 11 2 (5) (9)
+    // 0 4 11 2
+    "0 2 4 11": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    "0 4 11 14": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    // 0 4 (7) 11 2 (5) (9)
+    // 0 4 7 11 2 - ninth chord duplicates
+    // 0 4 11 2 5
+    "0 2 4 5 11": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    "0 2 4 11 17": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    "0 4 5 11 14": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    // 0 4 11 2 9
+    "0 2 4 9 11": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    "0 2 4 11 21": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    "0 4 11 14 21": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    // 0 4 7 11 2 5 - eleventh chord duplicates
+    // 0 4 7 11 2 9
+    "0 2 4 7 9 11": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    "0 2 4 7 11 21": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    "0 4 7 9 11 14": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    // 0 4 11 2 5 9
+    "0 2 4 5 9 11": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    "0 2 4 11 17 21": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    "0 4 5 11 14 21": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    "0 4 9 11 14 17": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    "0 4 11 14 17 21": {
+      short: "M¹³",
+      long: "maj¹³",
+      fullName: "Major Thirteenth",
+    },
+    /// </0 4 7 11 2 5 9>
+
+    /// <0 4 7 10 2 5 9>
     "0 2 4 5 7 9 10": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
     "0 2 4 7 10 17 21": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
     "0 4 5 7 10 14 21": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
     "0 4 7 9 10 14 17": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
     "0 4 7 10 14 17 21": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
-    // "0 3 7 11 2 5 9"
+    // root, third, seventh, thirteenth combos
+    // 0 4 (7) 10 2 (5) (9)
+    // 0 4 10 2
+    "0 2 4 10": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    "0 4 10 14": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    // 0 4 7 10 2 - ninth duplicates
+    // 0 4 10 2 5
+    "0 2 4 5 10": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    "0 2 4 10 17": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    "0 4 5 10 14": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    // 0 4 10 2 9
+    "0 2 4 9 10": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    "0 2 4 10 21": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    "0 4 9 10 14": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    // 0 4 7 10 2 5 - eleventh duplicates
+    // 0 4 7 10 2 9
+    "0 2 4 7 9 10": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    "0 2 4 7 10 21": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    "0 4 7 9 10 14": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    // 0 4 10 2 5 9
+    "0 2 4 5 9 10": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    "0 2 4 10 17 21": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    "0 4 5 10 14 21": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    "0 4 9 10 14 17": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    "0 4 10 14 17 21": { short: "¹³", long: "¹³", fullName: "Thirteenth" },
+    /// </0 4 7 10 2 5 9>
+
+    /// <0 3 7 11 2 5 9>
     "0 2 3 5 7 9 11": {
       short: "mᴹ¹³",
       long: "minᵐᵃʲ¹³",
@@ -1164,46 +1313,412 @@ class Maps {
       long: "minᵐᵃʲ¹³",
       fullName: "Minor Major Thirteenth",
     },
-    "": { short: "", long: "", fullName: "" },
-    "": { short: "", long: "", fullName: "" },
-    "": { short: "", long: "", fullName: "" },
-    "": { short: "", long: "", fullName: "" },
-    "": { short: "", long: "", fullName: "" },
-    "": { short: "", long: "", fullName: "" },
-    "": { short: "", long: "", fullName: "" },
-    "": { short: "", long: "", fullName: "" },
-    "": { short: "", long: "", fullName: "" },
+    // root, third, seventh, thirteenth combos
+    // 0 3 (7) 11 2 (5) (9)
+    // 0 3 11 2
+    "0 2 3 11": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    "0 3 11 14": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    // 0 3 7 11 2 - ninth duplicates
+    // 0 3 11 2 5
+    "0 2 3 5 11": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    "0 2 3 11 17": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    "0 3 5 11 14": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    // 0 3 11 2 9
+    "0 3 11 2 9": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    "0 2 3 11 21": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    "0 3 9 11 14": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    // 0 3 7 11 2 5 - eleventh duplicates
+    // 0 3 7 11 2 9
+    "0 2 3 7 9 11": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    "0 2 3 7 11 21": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    "0 3 7 9 11 14": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    // 0 3 11 2 5 9
+    "0 2 3 5 9 11": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    "0 2 3 11 17 21": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    "0 3 5 11 14 17": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    "0 3 9 11 14 17": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    "0 3 11 14 17 21": {
+      short: "mᴹ¹³",
+      long: "minᵐᵃʲ¹³",
+      fullName: "Minor Major Thirteenth",
+    },
+    /// </0 3 7 11 2 5 9>
 
-    // taken from https://www.smithfowler.org/music/Chord_Formulas.htm
-    // () = optional note
+    /// <0 3 7 10 2 5 9>
+    "0 2 3 5 7 9 10": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 2 3 7 10 17 21": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 3 5 7 10 14 21": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 3 7 9 10 14 17": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 3 7 10 14 17 21": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    // root, third, seventh, thirteenth combos
+    // 0 3 (7) 10 2 (5) (9)
+    // 0 3 10 2
+    "0 2 3 10": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    // 0 3 7 10 2 - ninth duplicates
+    // 0 3 10 2 5
+    "0 2 3 5 10": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 2 3 10 17": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 3 5 10 14": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    // 0 3 10 2 9
+    "0 2 3 9 10": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 2 3 10 21": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 3 9 10 14": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 3 10 14 21": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    // 0 3 7 10 2 5 - eleventh duplicates
+    // 0 3 7 10 2 9
+    "0 2 3 7 9 10": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 2 3 7 10 21": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 3 7 9 10 14": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 3 7 10 14 21": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    // 0 3 10 2 5 9
+    "0 2 3 5 9 10": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 2 3 10 17 21": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 3 5 10 14 21": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 3 9 10 14 17": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    "0 3 10 14 17 21": {
+      short: "m¹³",
+      long: "minor¹³",
+      fullName: "Minor Thirteenth",
+    },
+    /// </0 3 7 10 2 5 9>
 
-    // major
-    "1 3 5": { type: "Major", symbol: "Maj", formula: "" },
-    "1 3 4 5": { type: "Added Fourth", symbol: "add4", formula: "" },
-    "1 3 5 6": { type: "", symbol: "", formula: "" },
-    "1 3 5 6 9": { type: "", symbol: "", formula: "" },
-    "1 3 5 7": { type: "", symbol: "", formula: "" },
-    "1 3 5 7 9": { type: "", symbol: "", formula: "" },
-    // <1 3 5 7 (9) 11>
-    "1 3 5 7 11": { type: "", symbol: "", formula: "" },
-    "1 3 5 7 9 11": { type: "", symbol: "", formula: "" },
-    // </1 3 5 7 (9) 11>
-    // <1 3 5 7 (9) (11) 13>
-    "1 3 5 7 13": { type: "", symbol: "", formula: "" },
-    "1 3 5 7 9 13": { type: "", symbol: "", formula: "" },
-    "1 3 5 7 11 13": { type: "", symbol: "", formula: "" },
-    "1 3 5 7 9 11 13": { type: "", symbol: "", formula: "" },
-    // </1 3 5 7 (9) (11) 13>
-    "1 3 5 7 #11": { type: "", symbol: "", formula: "" },
-    "1 3 b5": { type: "", symbol: "", formula: "" },
+    /// <0 4 8 11 2 5 9>
+    "0 2 4 5 8 9 11": {
+      short: "+ᴹ¹³",
+      long: "augᵐᵃʲ¹³",
+      fullName: "Augmented Major Thirteenth",
+    },
+    "0 2 4 8 11 17 21": {
+      short: "+ᴹ¹³",
+      long: "augᵐᵃʲ¹³",
+      fullName: "Augmented Major Thirteenth",
+    },
+    "0 4 5 8 11 14 21": {
+      short: "+ᴹ¹³",
+      long: "augᵐᵃʲ¹³",
+      fullName: "Augmented Major Thirteenth",
+    },
+    "0 4 8 9 11 14 17": {
+      short: "+ᴹ¹³",
+      long: "augᵐᵃʲ¹³",
+      fullName: "Augmented Major Thirteenth",
+    },
+    "0 4 8 11 14 17 21": {
+      short: "+ᴹ¹³",
+      long: "augᵐᵃʲ¹³",
+      fullName: "Augmented Major Thirteenth",
+    },
+    // root, third, seventh, thirteenth combos
+    // 0 4 (8) 11 2 (5) (9)
+    // 0 4 11 2 - major thirteenth duplicate
+    // 0 4 8 11 2 - augmented major ninth duplicate
+    // 0 4 11 2 5 - major thirteenth duplicate
+    // 0 4 11 2 9 - major thirteenth duplicate
+    // 0 4 8 11 2 5 - augmented major eleventh duplicate
+    // 0 4 8 11 2 9
+    "0 2 4 8 9 11": {
+      short: "+ᴹ¹³",
+      long: "augᵐᵃʲ¹³",
+      fullName: "Augmented Major Thirteenth",
+    },
+    "0 2 4 8 11 21": {
+      short: "+ᴹ¹³",
+      long: "augᵐᵃʲ¹³",
+      fullName: "Augmented Major Thirteenth",
+    },
+    "0 4 8 9 11 14": {
+      short: "+ᴹ¹³",
+      long: "augᵐᵃʲ¹³",
+      fullName: "Augmented Major Thirteenth",
+    },
+    "0 4 8 11 14 21": {
+      short: "+ᴹ¹³",
+      long: "augᵐᵃʲ¹³",
+      fullName: "Augmented Major Thirteenth",
+    },
+    // 0 4 11 2 5 9 - major thirteenth duplicate
+    /// </0 4 8 11 2 5 9>
 
-    // minor
-    "": { type: "", symbol: "", formula: "" },
+    /// <0 4 8 10 2 5 9>
+    "0 2 4 5 8 9 10": {
+      short: "+¹³",
+      long: "aug¹³",
+      fullName: "Augmented Thirteenth",
+    },
+    "0 2 4 8 10 17 21": {
+      short: "+¹³",
+      long: "aug¹³",
+      fullName: "Augmented Thirteenth",
+    },
+    "0 4 5 8 10 14 21": {
+      short: "+¹³",
+      long: "aug¹³",
+      fullName: "Augmented Thirteenth",
+    },
+    "0 4 8 9 10 14 17": {
+      short: "+¹³",
+      long: "aug¹³",
+      fullName: "Augmented Thirteenth",
+    },
+    "0 4 8 10 14 17 21": {
+      short: "+¹³",
+      long: "aug¹³",
+      fullName: "Augmented Thirteenth",
+    },
+    // root, third, seventh, thirteenth combos
+    // 0 4 (8) 10 2 (5) (9)
+    // 0 4 10 2 - thirteenth duplicate
+    // 0 4 8 10 2 - augmented dominant ninth duplicate
+    // 0 4 10 2 5 - thirteenth duplicate
+    // 0 4 10 2 9 - thirteenth duplicate
+    // 0 4 8 10 2 5 - augmented eleventh duplicate
+    // 0 4 8 10 2 9
+    "0 2 4 8 9 10": {
+      short: "+¹³",
+      long: "aug¹³",
+      fullName: "Augmented Thirteenth",
+    },
+    "0 2 4 8 10 21": {
+      short: "+¹³",
+      long: "aug¹³",
+      fullName: "Augmented Thirteenth",
+    },
+    "0 4 8 9 10 14": {
+      short: "+¹³",
+      long: "aug¹³",
+      fullName: "Augmented Thirteenth",
+    },
+    "0 4 8 10 14 21": {
+      short: "+¹³",
+      long: "aug¹³",
+      fullName: "Augmented Thirteenth",
+    },
+    // 0 4 10 2 5 9 - thirteenth duplicate
+    /// </0 4 8 10 2 5 9>
+
+    /// <0 3 6 10 2 5 9>
+    "0 2 3 5 6 9 10": {
+      short: "ø¹³",
+      long: "ø¹³",
+      fullName: "Half-Diminished Thirteenth",
+    },
+    "0 2 3 6 10 17 21": {
+      short: "ø¹³",
+      long: "ø¹³",
+      fullName: "Half-Diminished Thirteenth",
+    },
+    "0 3 5 6 10 14 21": {
+      short: "ø¹³",
+      long: "ø¹³",
+      fullName: "Half-Diminished Thirteenth",
+    },
+    "0 3 6 9 10 14 17": {
+      short: "ø¹³",
+      long: "ø¹³",
+      fullName: "Half-Diminished Thirteenth",
+    },
+    "0 3 6 10 14 17 21": {
+      short: "ø¹³",
+      long: "ø¹³",
+      fullName: "Half-Diminished Thirteenth",
+    },
+    // root, third, seventh, thirteenth combos
+    // 0 3 (6) 10 2 (5) (9)
+    // 0 3 10 2 - minor thirteenth duplicate
+    // 0 3 6 10 2 - half-diminished ninth duplicates
+    // 0 3 10 2 5 - minor thirteenth dpulicate
+    // 0 3 10 2 9 - minor thirteenth dpulicate
+    // 0 3 6 10 2 5 - half-diminished eleventh duplicate
+    // 0 3 6 10 2 9
+    "0 2 3 6 9 10": {
+      short: "ø¹³",
+      long: "ø¹³",
+      fullName: "Half-Diminished Thirteenth",
+    },
+    "0 2 3 6 10 21": {
+      short: "ø¹³",
+      long: "ø¹³",
+      fullName: "Half-Diminished Thirteenth",
+    },
+    "0 3 6 9 10 14": {
+      short: "ø¹³",
+      long: "ø¹³",
+      fullName: "Half-Diminished Thirteenth",
+    },
+    "0 3 6 10 14 21": {
+      short: "ø¹³",
+      long: "ø¹³",
+      fullName: "Half-Diminished Thirteenth",
+    },
+    // 0 3 10 2 5 9 - minor thirteenth duplicates
+    /// </0 3 6 10 2 5 9>
+
+    // Added Tone Chords, not added but add in future
+
+    // Suspended Chords, not added but add in future
+
+    // Power Chords
+    "0 7": { short: "⁵", long: "⁵", fullName: "Power Chord" },
+    "0 7 12": { short: "⁵", long: "⁵", fullName: "Power Chord" },
+    "0 7 12 24": { short: "⁵", long: "⁵", fullName: "Power Chord" },
+
+    // Slash Chords / Inversions, not included, would complicate things a lot
+
+    // Polychords, not included
+
+    // base item:
+    // "": { short: "", long: "", fullName: "" },
   };
 }
 
 // export class ChordMaster {
-//   public static decipher(notes);
+//   public static decipherFrequencies(frequencies: (string | number)[]): Chord {
+
+//   }
 // }
 
 export class Chord {
@@ -1212,18 +1727,44 @@ export class Chord {
     this.notes = notes;
   }
 
-  public static fromFrequencies(frequencies: number[] | string[]) {}
+  /**
+   * creates Chord from list of frequencies
+   * @param frequencies list of frequencies
+   */
+  public static fromFrequencies(frequencies: number[] | string[]) {
+    // TODO:
+    // create chord from list of frequencies
+    const notes: Note[] = [];
+    for (const freq of frequencies) {
+      notes.push(Note.fromFreq(freq));
+    }
+    return new Chord(notes);
+  }
+
+  /**
+   * creates Chord from list of letters
+   * @param letters list of letter notes
+   */
+  public static fromLetters(letters: number[] | string[]) {
+    // TODO:
+    // create chord from list of letters
+  }
 
   public get intervals(): string {
-    // TODO: find lowest note, and find intervals
-    // of other notes in relation to that one
-    return "";
+    // index of notes in freq array
+    let i = [];
+    for (const n of this.notes) {
+      i.push(Maps.freqS.indexOf(n.freq));
+    }
+    // sort intervals ascending
+    i.sort((a, b) => a - b);
+    return i.join(" ");
   }
 }
 
 export class Note {
   freq: string;
-  constructor(freq: string) {
+  private constructor(freq: string) {
     if (Maps.freqS.indexOf(freq) <= -1) {
       throw new Error("frequency not supported");
     }
@@ -1263,15 +1804,15 @@ export class Note {
   }
 
   /**
-   * creates Note from note
-   * @param note note in format [Letter][nothing, # or b][octave], example: C#3
+   * creates Note from letter
+   * @param letter note in format [Letter][nothing, # or b][octave], examples: C#3, Db4
    * @returns Note
    */
-  public static fromNote(note: string) {
-    if (Maps.notes.flat().indexOf(note) <= -1) {
+  public static fromNote(letter: string) {
+    if (Maps.notes.flat().indexOf(letter) <= -1) {
       throw new Error("notes must be between C0 and B8");
     }
-    return new Note(note);
+    return new Note(letter);
   }
 }
 
