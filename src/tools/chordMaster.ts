@@ -1790,56 +1790,50 @@ class Maps {
 
 // export class ChordMaster {
 //   public static decipherFrequencies(frequencies: (string | number)[]): Chord {
-
 //   }
 // }
 
 export class Chord {
-  public notes: Note[];
+  // stored notes
+  readonly notes: Note[];
   private constructor(notes: Note[]) {
     this.notes = notes;
   }
-
   /**
    * creates Chord from list of frequencies
    * @param frequencies list of frequencies
+   * @returns Note
    */
   public static fromFrequencies(frequencies: number[] | string[]) {
-    // TODO:
-    // create chord from list of frequencies
     const notes: Note[] = [];
     for (const freq of frequencies) {
       notes.push(Note.fromFreq(freq));
     }
     return new Chord(notes);
   }
-
   /**
    * creates Chord from list of letters
    * @param letters list of letter notes, from C0 to B8
    * @throws error if letter not supported (ex: C#9, Ab20)
+   * @returns Note
    */
   public static fromLetters(letters: string[]) {
     let notes: Note[] = [];
     // flatten notes array to contain flats and sharps
-    const notesFlatArr = Maps.notes.flat(2);
     for (const l of letters) {
-      if (notesFlatArr.indexOf(l) <= -1) {
-        throw new Error(l + " not supported");
-      }
-      notes.push(Note.fromNote(l));
+      notes.push(Note.fromLetter(l));
     }
     return new Chord(notes);
   }
-
   /**
    * get note intervals
+   * @returns chord interval formula
    */
   public get intervals(): string {
     // index of notes in freq array
     let i = [];
     for (const n of this.notes) {
-      i.push(Maps.freqS.indexOf(n.freq));
+      i.push(Maps.freqS.indexOf(n.frequency));
     }
     // sort intervals ascending
     i = i.sort((a, b) => a - b);
@@ -1851,7 +1845,10 @@ export class Chord {
     // returns interval formula for chord
     return i.join(" ");
   }
-
+  /**
+   * @throws Error if chord name not found
+   * @returns chord full name
+   */
   public get chordFullName(): string {
     const i = Maps.chordPatterns[this.intervals];
     if (!i) {
@@ -1860,7 +1857,10 @@ export class Chord {
     // if interval found return
     return i.fullName;
   }
-
+  /**
+   * @throws Error if chord name not found
+   * @returns chord short name
+   */
   public get chordShortName(): string {
     const i = Maps.chordPatterns[this.intervals];
     if (!i) {
@@ -1869,7 +1869,10 @@ export class Chord {
     // if interval found return
     return i.short;
   }
-
+  /**
+   * @throws Error if chord name not found
+   * @returns chord long name
+   */
   public get chordLongName(): string {
     const i = Maps.chordPatterns[this.intervals];
     if (!i) {
@@ -1880,15 +1883,23 @@ export class Chord {
   }
 }
 
+/**
+ * Note class
+ */
 export class Note {
-  freq: string;
+  // note frequency
+  readonly frequency: string;
+  /**
+   *
+   * @param freq frequency key in
+   * @throws Error if frequency not in supported frequency list
+   */
   private constructor(freq: string) {
     if (Maps.freqS.indexOf(freq) <= -1) {
       throw new Error("frequency not supported");
     }
-    this.freq = freq;
+    this.frequency = freq;
   }
-
   /**
    * converts frequency to nearest Note
    * @param freq note frequency, string or number
@@ -1920,30 +1931,24 @@ export class Note {
       }
     }
   }
-
   /**
    * creates Note from letter
    * @param letter note in format [Letter][nothing, # or b][octave], examples: C#3, Db4
+   * @throws Error if note not within supported note range
    * @returns Note
    */
-  public static fromNote(letter: string) {
+  public static fromLetter(letter: string) {
     if (Maps.notes.flat().indexOf(letter) <= -1) {
-      throw new Error("notes must be between C0 and B8");
+      throw new Error(
+        letter + " note not supported (only support between C0 and B8)"
+      );
     }
     return new Note(letter);
   }
+  /**
+   * @returns stored note letter, if sharp or flat returns array of both
+   */
+  public get letter(): string {
+    return Maps.freqToNote[this.frequency];
+  }
 }
-
-// 16.35	32.7	65.41	130.81	261.63	523.25	1046.5	2093	4186
-// 17.32	34.65	69.3	138.59	277.18	554.37	1108.73	2217.46	4434.92
-// 18.35	36.71	73.42	146.83	293.66	587.33	1174.66	2349.32	4698.63
-// 19.45	38.89	77.78	155.56	311.13	622.25	1244.51	2489	4978
-// 20.6	41.2	82.41	164.81	329.63	659.25	1318.51	2637	5274
-// 21.83	43.65	87.31	174.61	349.23	698.46	1396.91	2793.83	5587.65
-// 23.12	46.25	92.5	185	369.99	739.99	1479.98	2959.96	5919.91
-// 24.5	49	98	196	392	783.99	1567.98	3135.96	6271.93
-// 25.96	51.91	103.83	207.65	415.3	830.61	1661.22	3322.44	6644.88
-// 27.5	55	110	220	440	880	1760	3520	7040
-// 29.14	58.27	116.54	233.08	466.16	932.33	1864.66	3729.31	7458.62
-// 30.87	61.74	123.47	246.94	493.88	987.77	1975.53	3951
-// 7902.13
