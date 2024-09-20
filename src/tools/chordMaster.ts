@@ -813,7 +813,6 @@ class Maps {
     Bb8: "7458.62",
     B8: "7902.13",
   };
-
   // taken from: https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals
   // Interval | Semitones | Full Name
   // P1       | 0         | Perfect Unison
@@ -831,7 +830,25 @@ class Maps {
   // P8       | 12        | Perfect Octave
 
   // map keys are chord formulas, which list intervals
-  static chordPatterns = {
+  static chordPatterns: {
+    [interval: string]: { short: string; long: string; fullName: string };
+  } = {
+    // from https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals
+    // Interval | Semitones | Full Name
+    // P1       | 0         | Perfect Unison
+    // m2       | 1         | Minor Second
+    // M2       | 2         | Major Second
+    // m3       | 3         | Minor Third
+    // M3       | 4         | Major Third
+    // P4       | 5         | Perfect Fourth
+    // Tritone  | 6         | Tritone
+    // P5       | 7         | Perfect Fifth
+    // m6       | 8         | Minor Sixth
+    // M6       | 9         | Major Sixth
+    // m7       | 10        | Minor Seventh
+    // M7       | 11        | Major Seventh
+    // P8       | 12        | Perfect Octave
+
     // Triads
     "0 4 7": { short: "M", long: "maj", fullName: "Major Triad" },
     "0 3 7": { short: "m", long: "min", fullName: "Minor Triad" },
@@ -1702,9 +1719,65 @@ class Maps {
     // Suspended Chords, not added but add in future
 
     // Power Chords
-    "0 7": { short: "⁵", long: "⁵", fullName: "Power Chord" },
+    "0 7": {
+      short: "⁵",
+      long: "⁵",
+      fullName: "Power Chord / Perfect Fifth Interval",
+    },
     "0 7 12": { short: "⁵", long: "⁵", fullName: "Power Chord" },
     "0 7 12 24": { short: "⁵", long: "⁵", fullName: "Power Chord" },
+
+    // Remaining Intervals
+    "0 1": {
+      short: "m2",
+      long: "minor 2nd",
+      fullName: "Minor Second Interval",
+    },
+    "0 2": {
+      short: "M2",
+      long: "major 2nd",
+      fullName: "Major Second Interval",
+    },
+    "0 4": {
+      short: "m3",
+      long: "minor 3rd",
+      fullName: "Minor Third Interval",
+    },
+    "0 5": {
+      short: "M3",
+      long: "major 3rd",
+      fullName: "Major Third Interval",
+    },
+    "0 6": {
+      short: "Tritone",
+      long: "Tritone",
+      fullName: "Tritone Interval",
+    },
+    "0 8": {
+      short: "m6",
+      long: "minor 6th",
+      fullName: "Minor Sixth Interval",
+    },
+    "0 9": {
+      short: "M6",
+      long: "major 6th",
+      fullName: "Major Sixth Interval",
+    },
+    "0 10": {
+      short: "m7",
+      long: "minor 7th",
+      fullName: "Minor Seventh Interval",
+    },
+    "0 11": {
+      short: "M7",
+      long: "Major 7th",
+      fullName: "Major Seventh Interval",
+    },
+    "0 12": {
+      short: "P8",
+      long: "perfect octave",
+      fullName: "Perfect Octave Interval",
+    },
 
     // Slash Chords / Inversions, not included, would complicate things a lot
 
@@ -1723,7 +1796,7 @@ class Maps {
 
 export class Chord {
   public notes: Note[];
-  constructor(notes: Note[]) {
+  private constructor(notes: Note[]) {
     this.notes = notes;
   }
 
@@ -1743,13 +1816,25 @@ export class Chord {
 
   /**
    * creates Chord from list of letters
-   * @param letters list of letter notes
+   * @param letters list of letter notes, from C0 to B8
+   * @throws error if letter not supported (ex: C#9, Ab20)
    */
-  public static fromLetters(letters: number[] | string[]) {
-    // TODO:
-    // create chord from list of letters
+  public static fromLetters(letters: string[]) {
+    let notes: Note[] = [];
+    // flatten notes array to contain flats and sharps
+    const notesFlatArr = Maps.notes.flat(2);
+    for (const l of letters) {
+      if (notesFlatArr.indexOf(l) <= -1) {
+        throw new Error(l + " not supported");
+      }
+      notes.push(Note.fromNote(l));
+    }
+    return new Chord(notes);
   }
 
+  /**
+   * get note intervals
+   */
   public get intervals(): string {
     // index of notes in freq array
     let i = [];
@@ -1757,8 +1842,41 @@ export class Chord {
       i.push(Maps.freqS.indexOf(n.freq));
     }
     // sort intervals ascending
-    i.sort((a, b) => a - b);
+    i = i.sort((a, b) => a - b);
+    const min = i[0];
+    // make root 0 and other intervals relative to root
+    for (let j = 0; j < i.length; j++) {
+      i[j] = i[j] - min;
+    }
+    // returns interval formula for chord
     return i.join(" ");
+  }
+
+  public get chordFullName(): string {
+    const i = Maps.chordPatterns[this.intervals];
+    if (!i) {
+      throw new Error("chord not found");
+    }
+    // if interval found return
+    return i.fullName;
+  }
+
+  public get chordShortName(): string {
+    const i = Maps.chordPatterns[this.intervals];
+    if (!i) {
+      throw new Error("chord not found");
+    }
+    // if interval found return
+    return i.short;
+  }
+
+  public get chordLongName(): string {
+    const i = Maps.chordPatterns[this.intervals];
+    if (!i) {
+      throw new Error("chord not found");
+    }
+    // if interval found return
+    return i.long;
   }
 }
 
