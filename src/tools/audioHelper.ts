@@ -1,4 +1,5 @@
 import { BehaviorSubject } from "rxjs";
+import { Chord, Note } from "./chordMaster";
 
 export type AudioState =
   | "loading"
@@ -6,6 +7,8 @@ export type AudioState =
   | "listening"
   | "idle"
   | Error;
+
+type nLF = { f: number; a: number }[];
 
 export class AudioHelper {
   private static _instance: AudioHelper;
@@ -124,9 +127,10 @@ export class AudioHelper {
 
   /**
    * @param n how many loudest frequencies
-   * @returns list of objects containing frequencies [f] and amplitues [a]
+   * @param sortBy sort returned list by a or f (amplitude or frequency)
+   * @returns descending list of objects containing frequencies [f] and amplitues [a]
    */
-  public nLoudestFrequencies(n: number): { f: number; a: number }[] {
+  public nLoudestFrequencies(n: number, sortBy: "a" | "f" = "a"): nLF {
     const l = this.dataArray;
     if (!l) return [];
 
@@ -138,9 +142,74 @@ export class AudioHelper {
         a: l![i], // amplitude
       });
     }
+    // sort descending
     decodedList.sort((a, b) => {
-      return a.a - b.a;
+      return b[sortBy] - a[sortBy];
     });
     return decodedList.slice(0, n);
+  }
+
+  /**
+   * @throws Error if chord not found
+   * @returns chord promise
+   */
+  public async findChord(nStrings: number): Promise<Chord> {
+    /// store nSample prominent frequencies lists from fft
+    // listens for minimum 2*100 ms = 2 seconds
+    let freqs: nLF[] = [];
+    const nSamples = 20;
+    const samplePeriod = 100; // ms
+    async function sleep(ms: number) {
+      return new Promise((r) => setTimeout(r, ms));
+    }
+    let gud: boolean = false;
+    let chord: Chord;
+    while (!gud) {
+      /// get frequencies, if not at desired size sleep and continue
+      freqs.push(this.nLoudestFrequencies(nStrings));
+      if (freqs.length < nSamples) {
+        await sleep(samplePeriod);
+        continue;
+      }
+      if (freqs.length > nSamples) {
+        freqs = freqs.slice(0, nSamples);
+      }
+      /// check if all arrays contain same frequencies
+      // create base frequency list
+      let fBase = freqs[0];
+      for (let j = 1; j < freqs.length; j++) {
+        // for each list
+        for (let k = 0; k < fBase.length; k++) {
+          // if one note different return
+          const fCase = freqs[j];
+          if (fBase[k].f != fCase[k].f) {
+            continue;
+          }
+        }
+      }
+      /// discard notes if any major changes in volume (TODO)
+      let f = fBase.map((v) => v.f);
+      const a = fBase.map((v) => v.a);
+      const loudest = a.sort((a, b) => b - a);
+      // find 2 loudest amplitudes
+      const maxA = loudest[0];
+      const max2A = loudest[1];
+      if (maxA / 2 > max2A) {
+        // if all notes more than half quiet, single note being played
+        const imaxA = a.indexOf(maxA);
+        f = [f[imaxA]];
+      }
+      // filter out quiet notes
+      if (f.length > 1) {
+        // if more than one note being played
+        // establish minimum amplitude to be 2/3 * maxA
+        const min = (maxA * 2) / 3;
+        f = f.filter((v) => v >= min);
+      }
+      /// set chord
+      chord = Chord.fromFrequencies(f);
+      gud = true;
+    }
+    return chord;
   }
 }
