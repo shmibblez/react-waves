@@ -5,9 +5,10 @@ import StartRecordingSVG from "../icons/startRecordingSVG.js"
 import StopRecordingSVG from "../icons/stopRecordingSVG.js"
 import WarningSVG from "../icons/warningSVG.js"
 import LoadingSVG from "../icons/loadingDotsSVG.js"
-import { AudioState, AudioHelper } from "../tools/audioHelper.js"
+import SolidCircleSVG from "../icons/solidCircleSVG.js"
+import { AudioState, AudioHelper } from "../tools/audioHelper"
 import NoSSR from 'react-no-ssr';
-import { Chord, ChordShapeGuitar } from "../tools/chordMaster.js";
+import { Chord, ChordShapeGuitar } from "../tools/chordMaster";
 
 // Home, base element
 export default function Home() {
@@ -89,12 +90,16 @@ function FindChordsTab() {
   if (audioState === "listening") {
     audioHelper.current.findChord(6).then(c => {
       setChord(c)
+      audioHelper.current.stop()
     }).catch(e => { console.log(e) })
   }
 
   useEffect(() => {
     audioHelper.current.audioState.forEach(s => {
       setAudioState(s)
+      if (s == "listening") {
+        setChord(null)
+      }
     })
   })
 
@@ -276,6 +281,7 @@ function RecordButton({ audioState }: { audioState: AudioState }) {
   }
   return (
     <div
+      style={{ flexGrow: "0" }}
       className={
         "mt-4 p-4 text-center rounded-xl " + bgColor
       }
@@ -322,23 +328,32 @@ function ChordShapes({ chord }: { chord: Chord }) {
       // if shapes generated show list of <ChordShape />
       // maximum fret span for chord
       const maxFretSpan = 7
+      const minFretSpan = 3
+      console.log(`shapes before filter: ${JSON.stringify(shapes)}`)
       // limit number of chord shapes shown, taking into account max chord shapes and max fret span
       if (shapes.length > maxChordShapes) {
         shapes = shapes.slice(0, maxChordShapes).filter(v => v.fretSpan() <= maxFretSpan)
       }
       // max fret span in shapes list
-      const mfs = shapes[shapes.length - 1].fretSpan()
+      const mfs = shapes[shapes.length - 1].fretSpan() + 1
       // convert chord shapes to visual representation (nFrets is max fret span so same number of frets shown for each)
       const chordShapes = shapes.map(v =>
-        <li key={v.fretNumbers.join(" ")} style={{ display: "inline" }}>
-          <ChordShape shape={v} nFrets={mfs} />
-        </li>
+        <ChordShape key={v.fretNumbers.join(" ")} shape={v} nFrets={mfs < minFretSpan ? minFretSpan : mfs} />
       )
+      console.log(`chord shapes: ${JSON.stringify(shapes)}`)
       // body is list of chord shapes
       body = (
-        <ol className="p-4 bg-zinc-800 rounded-xl border-2 border-zinc-500">
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flex: "space-around",
+            height: "100%",
+            width: "100%",
+          }}
+        >
           {chordShapes}
-        </ol>
+        </div>
       )
     }
   } else {
@@ -349,7 +364,8 @@ function ChordShapes({ chord }: { chord: Chord }) {
   }
   return (
     <div
-      style={{ flexGrow: "2", visibility: hidden ? "hidden" : "visible" }}>
+      className="mt-4 p-4 bg-zinc-800 rounded-xl border-2 border-zinc-500"
+      style={{ flexGrow: "0", visibility: hidden ? "hidden" : "visible" }}>
       {body}
     </div>
   )
@@ -375,33 +391,33 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
     .sort((a, b) => a - b)
   // smallest fret
   const baseFret = numbers[0]
-  /* draw fret number */
+  /* draw starting fret number */
   gridElements.push(
-    <div style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      // center at first fret along left
-      gridColumn: `1 / 2`,
-      gridRow: "1 / 3",
-      backgroundColor: "#55ff55",
-    }}>
-      <p>{baseFret}</p>
+    <div
+      className="m-0 p-0"
+      style={{
+        display: "flex",
+        justifyContent: "space-evenly",
+        alignItems: "center",
+        // center at first fret along left
+        gridColumn: `1 / 2`,
+        gridRow: "1 / 3",
+        flexDirection: "column",
+        flexWrap: "wrap"
+      }}>
+      <div style={{
+        flex: "2",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        verticalAlign: "middle",
+      }}>
+        <p>{baseFret}</p>
+      </div>
+      <div style={{ flex: "0.75" }} />
     </div>
   )
 
-  /* draw top fret thicker (bottom + top border below) */
-  gridElements.push(
-    <div
-      style={{
-        // starts at line 2
-        gridColumn: `2 / -1`,
-        // starts at line 1
-        gridRow: `1 / 2`,
-        borderBottom: "3px solid #000000",
-      }}
-    />
-  )
   // for each fret (fn = fret number)
   for (let fn = 0; fn < nFrets; fn++) {
     /* draw each fret (border top for each one) */
@@ -412,8 +428,9 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
           gridColumn: `2 / -1`,
           // starts at line 2
           gridRow: `${fn + 2} / ${fn + 3}`,
-          borderTop: "3px solid #000000",
-        }}
+          borderTop: "3px solid gray",
+        }
+        }
       />
     )
   }
@@ -430,7 +447,6 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
           gridColumn: `${sn + 2} / ${sn + 3}`,
           // starts at line 2
           gridRow: "2 / -1",
-          backgroundColor: "#ff0000",
         }}
       >
         <div
@@ -439,7 +455,7 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
             width: `${stringWidths[sn] ?? 1.5}px`,
             height: "100%",
             display: "block",
-            backgroundColor: "#000000",
+            backgroundColor: "white",
           }}
         ></div>
       </div>
@@ -456,7 +472,6 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
             // starts at column 2
             gridColumn: `${sn + 2} / ${sn + 3}`,
             gridRow: "1 / 2",
-            backgroundColor: "#55ff55",
           }}
         >
           <p>{"X"}</p>
@@ -474,7 +489,6 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
             // starts at column 2
             gridColumn: `${sn + 2} / ${sn + 3}`,
             gridRow: "1 / 2",
-            backgroundColor: "#55ff55",
           }}
         >
           <p>{"O"}</p>
@@ -492,7 +506,6 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
             // starts at column 2
             gridColumn: `${sn + 2} / ${sn + 3}`,
             gridRow: "1 / 2",
-            backgroundColor: "#55ff55",
           }}
         >
           <p>{shape.tuning[sn]}</p>
@@ -507,22 +520,33 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
             // starts at line 2
             gridColumn: `${sn + 2} / ${sn + 3}`,
             // starts at line 2, lowest fret at this point is 1
-            gridRow: `${baseFret - fret + 1} / ${baseFret - fret + 2}`,
+            gridRow: `${baseFret - fret + 2} / ${baseFret - fret + 3}`,
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          {/* TODO: add solid red circle svg here, width 90% */}
+          <div
+            style={{
+              width: "75%",
+            }}
+          >
+            <SolidCircleSVG stroke="red" />
+          </div>
         </div>
       )
     }
   }
 
   return (
-    // ratio is long to accomodate all visual elements
-    <div style={{ aspectRatio: 2 / 1 }}>
-      { // TODO: show chord representation with table that show frets,
-        // strings, finger placement (dots), and starting fret number 
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "inline-block",
+        backgroundColor: "black",
+        border: "2px solid gray"
+      }}>
+      { // TODO: add finger placement (dots)
       }
       {/**
        * parent grid
@@ -535,13 +559,13 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
        */}
       <div
         style={{
-          width: "100vw",
-          height: "100vh",
+          width: "20%",
+          height: "auto",
           display: "grid",
           // # columns = 1 + # strings
           gridTemplateColumns: `1fr repeat(${shape.tuning.length}, 2fr)`,
           // # frets = 1 + nFrets
-          gridTemplateRows: `1fr repeat(${nFrets + 1}, 2fr)`,
+          gridTemplateRows: `0.5fr repeat(${nFrets}, 2fr)`,
         }}
       >
         {gridElements}
