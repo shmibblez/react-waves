@@ -155,9 +155,9 @@ export class AudioHelper {
    */
   public async findChord(nStrings: number): Promise<Chord> {
     /// store nSample prominent frequencies lists from fft
-    // listens for minimum 2*100 ms = 2 seconds
+    // listens for minimum 40*100 ms = 4 seconds
     let freqs: nLF[] = [];
-    const nSamples = 20;
+    const nSamples = 40;
     const samplePeriod = 100; // ms
     async function sleep(ms: number) {
       return new Promise((r) => setTimeout(r, ms));
@@ -210,6 +210,7 @@ export class AudioHelper {
       chord = Chord.fromFrequencies(f);
       gud = true;
     }
+    console.log(`chord: ${chord.intervals}`);
     return chord;
   }
 }

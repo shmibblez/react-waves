@@ -2200,7 +2200,7 @@ export class Chord {
     // list of all note permutations
     const permutations = permutator(notesOG);
     // list of all chord chord shapes / fingerings possible
-    const shapes: ChordShapeGuitar[] = [];
+    const shapes: { [intervals: string]: ChordShapeGuitar } = {};
 
     // for each permutation
     permutationLoop: for (let p of permutations) {
@@ -2226,11 +2226,11 @@ export class Chord {
           fns.push(`${Math.trunc(fn)}`);
         }
       }
-      shapes.push(new ChordShapeGuitar(tuning, fns));
+      shapes[fns.join(" ")] = new ChordShapeGuitar(tuning, fns);
     }
 
     // return shapes sorted by most playable first (shortest fret span)
-    return shapes.sort((a, b) => a.fretSpan() - b.fretSpan());
+    return Object.values(shapes).sort((a, b) => a.fretSpan() - b.fretSpan());
   }
 }
 
