@@ -856,6 +856,8 @@ class Maps {
     // M7       | 11        | Major Seventh
     // P8       | 12        | Perfect Octave
 
+    // TODO: add single interval, "0": note name
+
     // Triads
     "0 4 7": { short: "M", long: "maj", fullName: "Major Triad" },
     "0 3 7": { short: "m", long: "min", fullName: "Minor Triad" },
@@ -2159,10 +2161,12 @@ export class Chord {
   /**
    * returns list of chord shapes for given chord, could return unplayable chords
    * @param tuning tuning of guitar, default is standard tuning (size of array changes number of strings)
+   * @param maxFretNumber max fret number, on electric usually 24, on bass guitar can go up to 36
    * @returns array of possible chord voicings (shapes), each shape is an array of fret number or "x", in order of strings passed
    */
   public guitarChordShapes(
-    tuning: SupportedNote[] = ["E2", "A2", "D3", "G3", "B3", "E4"]
+    tuning: SupportedNote[] = ["E2", "A2", "D3", "G3", "B3", "E4"],
+    maxFretNumber = 24
   ): ChordShapeGuitar[] {
     // TODO:
     //  - create function that generates list of all possible
@@ -2218,8 +2222,9 @@ export class Chord {
           const iStringNote = Maps.sharps.indexOf(tuning[i]);
           // distance between string base note and note in chord permutation
           const fn = iChordNote - iStringNote;
-          // if negative interval, continue to next iteration
-          if (fn < 0) {
+          // if negative interval, or above max fret,
+          // continue to next iteration
+          if (fn < 0 || fn > maxFretNumber) {
             continue permutationLoop;
           }
           // push fret number
@@ -2256,7 +2261,7 @@ export class Note {
    * @param freq note frequency, string or number
    * @returns Note
    */
-  public static fromFreq(freq: string | number) {
+  public static fromFreq(freq: string | number): Note {
     const f = Number(freq);
     // if leq first note return first note
     if (f <= Maps.freqN[0]) {
@@ -2266,8 +2271,8 @@ export class Note {
     if (f >= Maps.freqN[Maps.freqN.length - 1]) {
       return new Note(Maps.freqS[Maps.freqS.length - 1]);
     }
-    for (let i = 0; i < Maps.freqN.length - 1; i++) {
-      if (f >= Maps.freqN[i] && f <= Maps.freqN[i + i]) {
+    for (let i = 0; i < Maps.freqN.length; i++) {
+      if (f >= Maps.freqN[i] && f <= Maps.freqN[i + 1]) {
         // if between two frequencies return closest one
         const low = f - Maps.freqN[i];
         const high = Maps.freqN[i + 1] - f;
@@ -2281,6 +2286,9 @@ export class Note {
         }
       }
     }
+    throw new Error(
+      `this should not happen lol, no freq found, freq: ${freq}, f: ${f}`
+    );
   }
   /**
    * creates Note from letter
@@ -2308,8 +2316,16 @@ export class Note {
    */
   public get sharp(): SupportedNote {
     const note = Maps.freqToNote[this.frequency];
-    if (typeof note == "object") return note[0];
-    else return note;
+    let rn;
+    if (typeof note == "object") rn = note[0];
+    else rn = note;
+    if (!rn)
+      console.log(
+        `Note.sharp(), this.freq: ${this.frequency}, note: ${JSON.stringify(
+          rn
+        )}`
+      );
+    return rn;
   }
 
   /**

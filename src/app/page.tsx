@@ -6,6 +6,8 @@ import StopRecordingSVG from "../icons/stopRecordingSVG.js"
 import WarningSVG from "../icons/warningSVG.js"
 import LoadingSVG from "../icons/loadingDotsSVG.js"
 import SolidCircleSVG from "../icons/solidCircleSVG.js"
+import XSVG from "../icons/xSVG.js"
+import OSVG from "../icons/oSVG.js"
 import { AudioState, AudioHelper } from "../tools/audioHelper"
 import NoSSR from 'react-no-ssr';
 import { Chord, ChordShapeGuitar } from "../tools/chordMaster";
@@ -15,7 +17,7 @@ export default function Home() {
   const [selectedTab, setSelectedTab] = useState("find chords")
   return (
     <main
-      className="bg-zinc-950"
+      className="bg-zinc-950 m-0 p-0"
       style={{
         width: "100vw",
         height: "100vh",
@@ -170,7 +172,7 @@ function FrequencyDisplay() {
   }
 
   function draw() {
-    const nlf = audioHelper.current.nLoudestFrequencies(6) || []
+    const nlf = audioHelper.current.nLoudestNotes(6) || []
     const c = canvas.current
     const ctx = c.getContext("2d")
     const width = c!.width
@@ -192,7 +194,7 @@ function FrequencyDisplay() {
     // draw here
     // for each string, draw softest first so loudest are on top
     for (var i = nlf.length - 1; i >= 0; i--) {
-      const f = nlf[i].f
+      const f = Number(nlf[i].n.frequency)
       const a = nlf[i].a
       if ((Math.abs(maxAmplitude.current) === Infinity) || (Math.abs(a) > Math.abs(maxAmplitude.current))) {
         // update loudest amplitude
@@ -313,11 +315,17 @@ function ChordShapes({ chord }: { chord: Chord }) {
   let hidden = false
 
   if (chord) {
+    let error;
+    try {
+      chord.chordFullName
+    } catch (e) {
+      error = true;
+    }
     // if chord exists
     // max chord shapes to show
     const maxChordShapes = 10
     let shapes = chord.guitarChordShapes()
-    if (shapes.length <= 0) {
+    if (error || shapes.length <= 0) {
       // if no shapes generated show message
       body = (
         <div className="text-base pl-4 my-auto">
@@ -346,13 +354,22 @@ function ChordShapes({ chord }: { chord: Chord }) {
         <div
           style={{
             display: "flex",
-            flexDirection: "row",
-            flex: "space-around",
-            height: "100%",
-            width: "100%",
-          }}
-        >
-          {chordShapes}
+            flexDirection: "column",
+          }}>
+          <p>{chord.chordFullName}</p>
+          <div
+            style={{
+              flex: "1",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "stretch",
+              justifyContent: "stretch",
+              height: "100%",
+              width: "100%",
+            }}
+          >
+            {chordShapes}
+          </div>
         </div>
       )
     }
@@ -365,7 +382,10 @@ function ChordShapes({ chord }: { chord: Chord }) {
   return (
     <div
       className="mt-4 p-4 bg-zinc-800 rounded-xl border-2 border-zinc-500"
-      style={{ flexGrow: "0", visibility: hidden ? "hidden" : "visible" }}>
+      style={{
+        display: "flex",
+        visibility: hidden ? "hidden" : "visible"
+      }}>
       {body}
     </div>
   )
@@ -461,25 +481,28 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
       </div>
     )
     if (fret == "x") {
-      // if fret x (string muted) TODO: switch for X svg
+      // if fret x (string muted)
       /* draw string letter X */
       gridElements.push(
         <div
           style={{
             display: "flex",
+            flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
+            flexWrap: "nowrap",
             // starts at column 2
             gridColumn: `${sn + 2} / ${sn + 3}`,
             gridRow: "1 / 2",
           }}
         >
+          {/* <XSVG/> */}
           <p>{"X"}</p>
-        </div>
+        </div >
       )
     } else if (fret == "0") {
       // if fret 0 (open string)
-      /* draw string letter O TODO: switch for empty circle svg */
+      /* draw string letter O */
       gridElements.push(
         <div
           style={{
@@ -491,6 +514,7 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
             gridRow: "1 / 2",
           }}
         >
+          {/* <OSVG /> */}
           <p>{"O"}</p>
         </div>
       )
@@ -503,12 +527,13 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            overflow: "hidden",
             // starts at column 2
             gridColumn: `${sn + 2} / ${sn + 3}`,
             gridRow: "1 / 2",
           }}
         >
-          <p>{shape.tuning[sn]}</p>
+          <p >{shape.tuning[sn]}</p>
         </div>
       )
       /* draw finger placement indicator */
@@ -517,6 +542,7 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
         <div
           style={{
             display: "flex",
+            overflow: "hidden",
             // starts at line 2
             gridColumn: `${sn + 2} / ${sn + 3}`,
             // starts at line 2, lowest fret at this point is 1
@@ -540,14 +566,13 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
   return (
     <div
       style={{
-        width: "100%",
-        height: "100%",
-        display: "inline-block",
+        display: "flex",
+        alignItems: "stretch",
+        justifyContent: "space-around",
         backgroundColor: "black",
-        border: "2px solid gray"
+        border: "2px solid gray",
+        flex: "1"
       }}>
-      { // TODO: add finger placement (dots)
-      }
       {/**
        * parent grid
        * layout:
@@ -559,7 +584,6 @@ function ChordShape({ shape, nFrets }: { shape: ChordShapeGuitar, nFrets: number
        */}
       <div
         style={{
-          width: "20%",
           height: "auto",
           display: "grid",
           // # columns = 1 + # strings

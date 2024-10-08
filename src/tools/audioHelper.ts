@@ -8,7 +8,7 @@ export type AudioState =
   | "idle"
   | Error;
 
-type nLF = { f: number; a: number }[];
+type nLF = { n: Note; a: number }[];
 
 export class AudioHelper {
   private static _instance: AudioHelper;
@@ -67,7 +67,8 @@ export class AudioHelper {
       const sampleRate = 44100; // Hz
       // minFInterval = 18.501 // Hz
       // sampleRate / minFInterval = approx 2383, 4096 is nearest greatest power of 2
-      const fftSize = 4096;
+      // 4096 was used but no results, using next power
+      const fftSize = 8192;
       // audio ctx & analyser
       this._audioCtx = new AudioContext({ sampleRate: sampleRate });
       this._analyserNode = this._audioCtx.createAnalyser();
@@ -127,26 +128,54 @@ export class AudioHelper {
 
   /**
    * @param n how many loudest frequencies
-   * @param sortBy sort returned list by a or f (amplitude or frequency)
-   * @returns descending list of objects containing frequencies [f] and amplitues [a]
+   * @param sortBy sort returned list by a or n (amplitude or note frequency)
+   * @returns descending list of objects containing notes [n] and amplitues [a]
    */
-  public nLoudestFrequencies(n: number, sortBy: "a" | "f" = "a"): nLF {
+  public nLoudestNotes(n: number, sortBy: "a" | "n" = "a"): nLF {
     const l = this.dataArray;
     if (!l) return [];
 
-    const decodedList = [];
+    const decodedList: nLF = [];
     const binInterval = 44100 / l!.length;
-    for (var i = 0; i < l!.length; i++) {
+    for (let i = 0; i < l!.length; i++) {
+      const n = Note.fromFreq(binInterval * i + binInterval / 2);
       decodedList.push({
-        f: binInterval * i + binInterval / 2, // frequency
+        n: n, // frequency
         a: l![i], // amplitude
       });
     }
     // sort descending
     decodedList.sort((a, b) => {
-      return b[sortBy] - a[sortBy];
+      if (sortBy == "a") {
+        return b[sortBy] - a[sortBy];
+      } else {
+        return Number(b[sortBy].frequency) - Number(a[sortBy].frequency);
+      }
     });
-    return decodedList.slice(0, n);
+
+    const nLoudest: nLF = [];
+    for (let i = 0; i < decodedList.length; i++) {
+      const item = decodedList[i];
+      // if (!item.n) {
+      //   console.log(
+      //     `\n\n\n\nFUCK\ni: ${i}\nnote:${item.n}\nlist: ${JSON.stringify(
+      //       decodedList
+      //     )}\n\n\n\n\n`
+      //   );
+      // }
+      if (
+        !nLoudest.find((v) => {
+          return v.n.sharp == item.n.sharp;
+        })
+      ) {
+        nLoudest.push(item);
+      }
+      if (nLoudest.length >= n) {
+        break;
+      }
+    }
+
+    return nLoudest;
   }
 
   /**
@@ -157,44 +186,59 @@ export class AudioHelper {
     /// store nSample prominent frequencies lists from fft
     // listens for minimum 40*100 ms = 4 seconds
     let freqs: nLF[] = [];
-    const nSamples = 40;
+    const nSamples = 30;
     const samplePeriod = 100; // ms
     async function sleep(ms: number) {
       return new Promise((r) => setTimeout(r, ms));
     }
     let gud: boolean = false;
     let chord: Chord;
-    while (!gud) {
+    gudList: while (!gud) {
       /// get frequencies, if not at desired size sleep and continue
-      freqs.push(this.nLoudestFrequencies(nStrings));
+      const nFreqs = this.nLoudestNotes(nStrings);
+      freqs.push(nFreqs);
       if (freqs.length < nSamples) {
         await sleep(samplePeriod);
         continue;
       }
       if (freqs.length > nSamples) {
-        freqs = freqs.slice(0, nSamples);
+        freqs = freqs.slice(1, nSamples + 1);
       }
-      /// check if all arrays contain same frequencies
       // create base frequency list
       let fBase = freqs[0];
+      // if any amplitude -Infinity continue
+      for (let item of fBase) {
+        if (!item.a || !Number.isFinite(item.a)) {
+          console.log("undefined");
+          await sleep(samplePeriod);
+          continue gudList;
+        }
+      }
+      // console.log("fbase: " + JSON.stringify(fBase));
+      /// check if all arrays contain same frequencies
       for (let j = 1; j < freqs.length; j++) {
         // for each list
         for (let k = 0; k < fBase.length; k++) {
           // if one note different return
           const fCase = freqs[j];
-          if (fBase[k].f != fCase[k].f) {
+          if (fBase[k].n.frequency != fCase[k].n.frequency) {
             continue;
           }
         }
       }
       /// discard notes if any major changes in volume (TODO)
-      let f = fBase.map((v) => v.f);
+      let f: number[] = fBase.map((v) => Number(v.n.frequency));
+
       const a = fBase.map((v) => v.a);
+      console.log("freqs before filter: " + JSON.stringify(f.join(" ")));
+      console.log("ampli before filter: " + JSON.stringify(a.join(" ")));
+      // sort ascending
       const loudest = a.sort((a, b) => b - a);
+      console.log("loudest: " + JSON.stringify(loudest));
       // find 2 loudest amplitudes
       const maxA = loudest[0];
       const max2A = loudest[1];
-      if (maxA / 2 > max2A) {
+      if (maxA / 2 < max2A) {
         // if all notes more than half quiet, single note being played
         const imaxA = a.indexOf(maxA);
         f = [f[imaxA]];
@@ -203,9 +247,14 @@ export class AudioHelper {
       if (f.length > 1) {
         // if more than one note being played
         // establish minimum amplitude to be 2/3 * maxA
-        const min = (maxA * 2) / 3;
+        const min = (maxA * 1) / 2;
         f = f.filter((v) => v >= min);
       }
+      console.log(
+        "letters after: " +
+          JSON.stringify(f.map((v) => Note.fromFreq(v).sharp).join(" "))
+      );
+
       /// set chord
       chord = Chord.fromFrequencies(f);
       gud = true;

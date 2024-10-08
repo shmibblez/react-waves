@@ -1,7 +1,14 @@
 function SolidCircleSVG({ stroke = "#ffffff" }) {
   return (
-    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="8" cy="8" r="8" fill={stroke} />
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 -0.5 11 11">
+      <circle
+        cx="5"
+        cy="5"
+        r="5"
+        fill={stroke}
+        stroke={stroke}
+        stroke-width="1"
+      />
     </svg>
   );
 }
